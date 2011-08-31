@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo ''
+echo '	  ###    WARNING    ###'
+echo 'If you are an iPhone 4/iPod Touch 4G user,'
+echo 'you will have to patch your device'
+echo 'in order to get this working'
+echo 'To do so, follow the instructions below'
+echo '(if you have already done this for libgpod,'
+echo 'that is fine, you do not have to repeat it).'
+echo '1. Open the /System/Library/Lockdown/Checkpoint.xml'
+echo 'file on your device with any text, xml or plist editor'
+echo '(MyFile or iFile should be fine). Then search for'
+echo 'the key DBVersion and change its corresponding value'
+echo 'from 5 to 4 and save the file.'
+echo '2. Reboot your iPhone/iPod Touch'
+echo '3. Sync with iTunes'
+echo ''

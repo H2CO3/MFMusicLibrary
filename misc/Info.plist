@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleGetInfoString</key>
+	<string>iPod library reading/writing support framework</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.h2co3.mfmusiclibrary</string>
+	<key>CFBundleName</key>
+	<string>MFMusicLibrary</string>
+	<key>CFBundleExecutable</key>
+	<string>MFMusicLibrary</string>
+	<key>CFBundlePackageType</key>
+	<string>FMWK</string>
+	<key>CFBundleVersion</key>
+	<string>0.4</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright (C) Árpád Goretity (H2CO3), 2011.</string>
+</dict>
+</plist>

@@ -1,0 +1,39 @@
+How to use the framework
+
+0. Install glib, libid3tag, libgpod and libplist from Cydia. Copy their contents to your toolchains sysroot, respectively.
+1. Edit the Makefile according to your toolchain settings. Typically, you'll need to edit $(TOOLCHAIN), $(TOOLCHAIN_BIN), $(TOOLCHAIN_SYS) and $(CC).
+2. make
+3. make package
+4. Install bld/$(PACKAGE).deb on your iDevice. If you're not using the on-device toolchain, you'll need to trasfer the framework bundle to your toolchain's sysroot  inside /System/Library/Frameworks.
+5. #import <MFMusicLibrary/MFMusicLibrary.h> and link to the framework by adding -framework MFMusicLibrary to your LDFLAGS.
+6. Start creating music library requests, e. g.:
+
+uint32_t num = [[MFMusicLibrary sharedLibrary] numberOfTracks];
+for (uint32_t i = 0; i < num; i++) {
+	MFMusicTrack *track = [[MFMusicLibrary sharedLibrary] trackForIndex: i];
+	NSLog (@”%@: %@ (%@)\n”, track.artist, track.title, track.album);
+}
+
+or, for example:
+
+NSString *path = @”/var/mobile/Downloads/downloaded_music.mp3”;
+[[MFMusicLibrary sharedLibrary] addFile: path];
+[[MFMusicLibrary sharedLibrary] write];
+
+see the MFMusicLibrary.h header for more info.
+
+Please note the following:
+ - you have to perform all requests as user mobile. If your app is root, seteuid(501), then perform query, then seteuid(0) again, else it'll corrupt your music library and iPod will crash a few times until it's able to fully backup the library (to an empty state).
+ - Thnanks to some good advices from @Sirakain, the 'you-have-to-sync-to-PC-after-running-[[MFMusicLibrary sharedLibrary] write]' issue no longer exists, and HAS SUCCESSFULLY & COMPLETELY FIXED. libgpod v0.8.2-3 also removes the need of manually creating HashInfo etc. files, the APT postinstallation script does the dirty job. The user is only required to reboot and sync with iTunes once.
+ - v0.3 added track removal functions to MFMusicLibrary and more metadata properties to MFMusicTrack.
+
+ - v0.4 changelog:
+	Fixed mediatype in MFMusicTrack: now it assumes music and video for tracks with an unknown type
+	Added length to MFID3Tag and MFMusicTrack objects
+	Added artwork support to MFMusicLibrary and MFMusicTrack
+	Rewritten genre support by libid3tag's pre-defined, well-implemented genre handling functions, instead of own (and rather hackish) genre interface
+	Added some missing const qualifiers to C and UCS4 strings and rewritten every method assuming UTF8 encoding instead of Latin-1
+	(as - surprise, surprise - we are given, or at least we are told to be given UTF8 strings from [NSString UTF8String])
+	Rewritten localizations using standard Cocoa methods instead of own (rather hackish) solution
+	
+
