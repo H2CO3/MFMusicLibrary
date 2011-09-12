@@ -35,45 +35,65 @@
 	self = [super init];
 
 	if ((fileName == nil) || ([fileName isEqualToString: @""])) {
+		[self release];
 		return nil;
 	}
 
-        // We need to write to the file
+	// We need to write to the file
 	file = id3_file_open ([fileName UTF8String], ID3_FILE_MODE_READWRITE);
 
 	if (file == NULL) {
+		[self release];
 		return nil;
 	}
 
 	tag = id3_file_tag (file);
 
 	if (tag == NULL) {
+		[self release];
 		return nil;
 	}
-
+	
 	return self;
 
 }
 
 - (NSString *) frameDataForId: (char *) frameId {
 
-        // find the first tag of id frameId
+	// find the first tag of id frameId
 	struct id3_frame *frm = id3_tag_findframe (tag, frameId, 0);
 	if (frm == NULL) {
 		return nil;
 	}
 
-        // if no text in frame, return nil
-	union id3_field *field = &frm->fields[1];
+	// find the 2nd (#1) field of the frame
+	// (this is the actual text data,
+	// the 1st one (#0) contains the data type (string in this case))
+	union id3_field *field = id3_frame_field (frm, 1);
+	if (field == NULL) {
+		return NO;
+	}
+
+	// if no text in frame, return nil
 	int n = id3_field_getnstrings (field);
 	if (n == 0) {
 		return nil;
 	}
 
-        // else, get the first string
+	// else, get the first string
 	const id3_ucs4_t *buf = id3_field_getstrings (field, 0);
-        // and Cocoaize it
-	NSString *val = [NSString stringWithUTF8String: (char *)id3_ucs4_utf8duplicate (buf)];
+	if (buf == NULL) {
+		return nil;
+	}
+	
+	// and Cocoaize it
+	char *string_val = id3_ucs4_utf8duplicate (buf);
+	if (string_val == NULL) {
+		return nil;
+	}
+
+	NSString *val = [NSString stringWithUTF8String: string_val];
+	free (string_val);
 
 	return val;
 
@@ -81,41 +101,51 @@
 
 - (BOOL) setFrameData: (NSString *) value forId: (char *) frameId {
 
-        // One may not set data to nil
+	// One may not set data to nil
 	if (value == nil) {
 		return NO;
 	}
 	
-        // get the frame for id frameId
+	// get the frame for id frameId
 	struct id3_frame *frm = id3_tag_findframe (tag, frameId, 0);
 	
 	BOOL frameIsNew = NO;
-        // if not exists, create and append
+	// if not exists, create and append
 	if (frm == NULL) {
 		frm = id3_frame_new (frameId);
 		frameIsNew = YES;
 	}
-        // if creation failed, we can't do anything else
+	// if creation failed, we can't do anything else
 	if (frm == NULL ) {
 		return NO;
 	}
 
-	// convert to UCS4 because ID3
-        // frames like this encoding
-	id3_ucs4_t *ptr = id3_utf8_ucs4duplicate ((unsigned char *)[value UTF8String]);
-        // set one string: The String
-	if (id3_field_setstrings (&frm->fields[1], 1, &ptr) == -1) {
+	// find the 2nd (#1) field of the frame
+	// (this is the actual text data,
+	// the 1st one (#0) contains the data type (string in this case))
+	union id3_field *field = id3_frame_field (frm, 1);
+	if (field == NULL) {
 		return NO;
 	}
 
-        // if nonexistent, attach frame
+	// convert to UCS4 because ID3
+	// frames like this encoding
+	id3_ucs4_t *ptr = id3_utf8_ucs4duplicate ((char *)[value UTF8String]);
+	// set one string: The String
+	int success = id3_field_setstrings (field, 1, &ptr);
+	free (ptr);
+	if (success == -1) {
+		return NO;
+	}
+
+	// if nonexistent, attach frame
 	if (frameIsNew) {
 		if (id3_tag_attachframe (tag, frm) == -1) {
 			return NO;
 		}
 	}
 
-        // and save the result to the file
+	// and save the result to the file
 	if (id3_file_update (file) == -1) {
 		return NO;
 	}
@@ -180,14 +210,29 @@
 	NSString *genre = nil;
 	
 	const char *genre_numstr = [[self frameDataForId: ID3_FRAME_GENRE] UTF8String];
-	id3_ucs4_t *genre_numstr_ucs4 = id3_utf8_ucs4duplicate (genre_numstr);
-	unsigned int genre_num = (unsigned int)id3_ucs4_getnumber (genre_numstr_ucs4);
-	const id3_ucs4_t *genre_name_ucs4 = id3_genre_index (genre_num);
-	const char *genre_name = id3_ucs4_utf8duplicate (genre_name_ucs4);
-	
-	if (genre_name != NULL) {
-		genre = [NSString stringWithUTF8String: genre_name];
+	if (genre_numstr == NULL) {
+		return genre;
 	}
+	
+	id3_ucs4_t *genre_numstr_ucs4 = id3_utf8_ucs4duplicate ((unsigned char *)genre_numstr);
+	if (genre_numstr_ucs4 == NULL) {
+		return genre;
+	}
+	
+	unsigned int genre_num = (unsigned int)id3_ucs4_getnumber (genre_numstr_ucs4);
+	free (genre_numstr_ucs4);
+	const id3_ucs4_t *genre_name_ucs4 = id3_genre_index (genre_num);
+	if (genre_name_ucs4 == NULL) {
+		return genre;
+	}
+	
+	char *genre_name = id3_ucs4_utf8duplicate (genre_name_ucs4);
+	if (genre_name == NULL) {
+		return genre;
+	}
+	
+	genre = [NSString stringWithUTF8String: genre_name];
+	free (genre_name);
 	
 	return genre;
 	
@@ -200,14 +245,23 @@
 // case- but also encoding-insensitive
 - (BOOL) setGenre: (NSString *) data {
 
+	if ([data length] == 0) {
+		return NO;
+	}
+	
 	const char *genre = [data UTF8String];
-	const id3_ucs4_t *genre_ucs4 = id3_utf8_ucs4duplicate (genre);
+	id3_ucs4_t *genre_ucs4 = id3_utf8_ucs4duplicate ((unsigned char *)genre);
+	if (genre_ucs4 == NULL) {
+		return NO;
+	}
+	
 	int genre_num = id3_genre_number (genre_ucs4);
-
+	free (genre_ucs4);
 	if (genre_num < 0) {
 		return NO;
 
 	}
+	
 	NSString *genre_numstr = [NSString stringWithFormat: @"%i", genre_num];
 
 	return [self setFrameData: genre_numstr forId: ID3_FRAME_GENRE];
@@ -249,10 +303,23 @@
 		return nil;
 	}
 
-	union id3_field *field = &frm->fields[3];
-
+	union id3_field *field = id3_frame_field (frm, 3);
+	if (field == NULL) {
+		return nil;
+	}
+	
 	const id3_ucs4_t *buf = id3_field_getfullstring (field);
-	NSString *val = [NSString stringWithUTF8String: (char *)id3_ucs4_latin1duplicate (buf)];
+	if (buf == NULL) {
+		return nil;
+	}
+	
+	char *comment = id3_ucs4_utf8duplicate ((unsigned char *)buf);
+	if (comment == NULL) {
+		return nil;
+	}
+	
+	NSString *val = [NSString stringWithUTF8String: comment];
+	free (comment);
 
 	return val;
 	
@@ -260,12 +327,11 @@
 
 - (BOOL) setComments: (NSString *) data {
 
-	if (data == nil) {
+	if ([data length] == 0) {
 		return NO;
 	}
 	
 	struct id3_frame *frm = id3_tag_findframe (tag, ID3_FRAME_COMMENT, 0);
-	
 	BOOL frameIsNew = NO;
 	if (frm == NULL) {
 		frm = id3_frame_new (ID3_FRAME_COMMENT);
@@ -276,7 +342,18 @@
 	}
 	
 	id3_ucs4_t *ptr = id3_latin1_ucs4duplicate ((unsigned char *)[data UTF8String]);
-	if (id3_field_setfullstring (&frm->fields[3], ptr) == -1) {
+	if (ptr == NULL) {
+		return NO;
+	}
+	
+	union id3_field *field = id3_frame_field (frm, 3);
+	if (field == NULL) {
+		return NO;
+	}
+	
+	int success = id3_field_setfullstring (field, ptr);
+	free (ptr);
+	if (success == -1) {
 		return NO;
 	}
 
@@ -304,7 +381,7 @@
 		return nil;
 	}
 
-	union id3_field *field = &frm->fields[4];
+	union id3_field *field = id3_frame_field (frm, 4);
 
 	id3_length_t length;
 	const id3_byte_t *buf = id3_field_getbinarydata (field, &length);
@@ -331,10 +408,15 @@
 	if (frm == NULL ) {
 		return NO;
 	}
+
+	union id3_field *field = id3_frame_field (frm, 4);
+	if (field == NULL) {
+		return NO;
+	}
 	
 	const id3_byte_t *ptr = [data bytes];
 	id3_length_t length = [data length];
-	if (id3_field_setbinarydata (&frm->fields[4], ptr, length) == -1) {
+	if (id3_field_setbinarydata (field, ptr, length) == -1) {
 		return NO;
 	}
 
@@ -354,14 +436,14 @@
 
 - (uint32_t) length {
 
-	return (uint32_t)[[self frameDataForId: "TLAN"] longLongValue];
+	return (uint32_t)[[self frameDataForId: "TLEN"] longLongValue];
 	
 }
 
 - (BOOL) setLength: (uint32_t) length {
 
 	NSString *textLength = [[NSString alloc] initWithFormat: @"%ld", length];
-	BOOL result = [self setFrameData: textLength forId: "TLAN"];
+	BOOL result = [self setFrameData: textLength forId: "TLEN"];
 	[textLength release];
 	
 	return result;
@@ -379,4 +461,5 @@
 }
 
 @end
+
 

@@ -36,4 +36,8 @@ Please note the following:
 	(as - surprise, surprise - we are given, or at least we are told to be given UTF8 strings from [NSString UTF8String])
 	Rewritten localizations using standard Cocoa methods instead of own (rather hackish) solution
 	
+ - v0.5 changelog:
+ 	Added some NULL-checks in order to fix crashes related to dereferencing them
+ 	Corrected error that length frame data was returned incorrectly ("TLAN" was used instead of "TLEN" thus always returning 0)
+
 

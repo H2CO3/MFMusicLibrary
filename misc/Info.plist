@@ -13,7 +13,7 @@
 	<key>CFBundlePackageType</key>
 	<string>FMWK</string>
 	<key>CFBundleVersion</key>
-	<string>0.4</string>
+	<string>0.5</string>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright (C) Árpád Goretity (H2CO3), 2011.</string>
 </dict>
