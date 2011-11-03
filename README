@@ -41,3 +41,6 @@ Please note the following:
  	Corrected error that length frame data was returned incorrectly ("TLAN" was used instead of "TLEN" thus always returning 0)
 
 
+ - v0.6 changelog:
+	Improved coding style
+	Added some static methods to avoid code duplication
