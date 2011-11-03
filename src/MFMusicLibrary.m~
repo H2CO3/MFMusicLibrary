@@ -49,7 +49,6 @@ static MFMusicLibrary *sharedInstance = nil;
 	itdb = itdb_parse(MFDeviceMediaDirectory, NULL);
 	if (itdb == NULL) {
 		// if for some reason, parsing failed, return nil
-		[self release];
 		return nil;
 	}
 	return self;

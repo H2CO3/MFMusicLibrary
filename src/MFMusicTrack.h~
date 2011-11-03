@@ -30,7 +30,6 @@
 #import <gpod/itdb.h>
 #import <Foundation/Foundation.h>
 #import "MFCommonDefines.h"
-#import "MFID3Tag.h"
 
 // Class for representing media items in the iPod library
 // Create instances using +alloc and -init
@@ -88,7 +87,7 @@
 + (MFMusicTrack *) trackFromTag:(MFID3Tag *)tag;
 // create a track from libgpod's structs
 + (MFMusicTrack *) trackFromGpodTrack:(Itdb_Track *)track;
-// create a libgpod track object from an MFMusicTrack instance
+
 + (Itdb_Track *) gpodTrackFromTrack:(MFMusicTrack *)track;
 
 @end

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>No title</key>
+	<string>No title</string>
+	<key>Unknown album</key>
+	<string>Unknown album</string>
+	<key>Unknown artist</key>
+	<string>Unknown artist</string>
+	<key>Unknown genre</key>
+	<string>Unknown genre</string>
+	<key>Unknown composer</key>
+	<string>Unknown composer</string>
+	<key>Unknown category</key>
+	<string>Unknown category</string>
+</dict>
+</plist>

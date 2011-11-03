@@ -45,8 +45,8 @@
 
 // primitives for accessing data in _TEXT_ frames.
 // May not be needed to call directly
-- (NSString *) frameDataForId:(const char *)frameId;
-- (BOOL) setFrameData:(NSString *)value forId:(const char *)frameId;
+- (NSString *) frameDataForId:(char *)frameId;
+- (BOOL) setFrameData:(NSString *)value forId:(char *)frameId;
 
 // Accessors
 // Note that setting a property immediately

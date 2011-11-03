@@ -83,7 +83,7 @@
 	return val;
 }
 
-- (BOOL) setFrameData:(NSString *)value forId:(const char *)frameId {
+- (BOOL) setFrameData:(NSString *)value forId:(char *)frameId {
 	// One may not set data to nil
 	if (value == nil) {
 		return NO;

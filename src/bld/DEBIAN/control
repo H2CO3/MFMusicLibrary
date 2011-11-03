@@ -1,0 +1,11 @@
+Package: org.h2co3.mfmusiclibrary
+Name: MFMusicLibrary.framework
+Version: 0.6
+Depends: glib, libgpod, libid3tag
+Architecture: iphoneos-arm
+Section: Development
+Author: Arpad Goretity (H2CO3) <arpad.goretity@gmail.com>
+Maintainer: Arpad Goretity (H2CO3) <arpad.goretity@gmail.com>
+Depiction: http://h2co3.tk/
+Description: Objective-C wrapper library around libgpod
+

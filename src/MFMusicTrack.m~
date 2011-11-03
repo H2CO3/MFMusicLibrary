@@ -82,6 +82,7 @@
 	guint32 rating = track->rating;
 	guint32 mediatype = track->mediatype;
 	gint32 length = track->tracklen;
+	MFMusicTrack *mtrk = [[[MFMusicTrack alloc] init] autorelease];
 	mtrk.path = [NSString stringWithUTF8String: path];
 	g_free(path);
 	mtrk.title = title ? [NSString stringWithUTF8String: title] : MFLocalizedString(@"No title");
@@ -129,7 +130,6 @@
 		gsize data_length = (gsize)[track.artwork length];
 		itdb_artwork_set_thumbnail_from_data(trk->artwork, data_bytes, data_length, 0, NULL);
 	}
-	return trk;
 }
 
 @end

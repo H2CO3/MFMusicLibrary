@@ -68,20 +68,20 @@
 // arguments:
 // idx: integer representing the place of the playlist in the library
 // returns: the corresponding playlists's nams or nil if it's nonexistent
-- (NSString *) playlistNameForIndex:(uint32_t)idx;
+- (NSString *) playlistNameForIndex: (uint32_t) idx;
 
 // Create a playlist with a given name
 // and add it to the music library
 // arguments:
 // name: an NSString representing the name of the playlist to be created
 // returns: void
-- (void) createPlaylistWithName:(NSString *)name;
+- (void) createPlaylistWithName: (NSString *) name;
 
 // Remove a playlist from the music library given a name
 // arguments:
 // name: an NSString representing the playlist to be removed
 // returns: void
-- (void) removePlaylistWithName:(NSString *)name;
+- (void) removePlaylistWithName: (NSString *) name;
 
 // Number of tracks in the library
 // arguments: none
@@ -92,26 +92,26 @@
 // arguments:
 // index: the index of the requested track
 // returns: an MFMusicTrack object representing the specified track
-- (MFMusicTrack *) trackForIndex:(uint32_t)index;
+- (MFMusicTrack *) trackForIndex: (uint32_t) index;
 
 // Delete a track from the music library completely
 // arguments:
 // index: the index of the track to be removed
 // returns: void
-- (void) removeTrackForIndex:(uint32_t)index;
+- (void) removeTrackForIndex: (uint32_t) index;
 
 // Number of tracks in a specified playlist
 // arguments:
 // name: the name of the playlist to get the number of tracks of
 // returns: the number of tracks found
-- (uint32_t) numberOfTracksInPlaylist:(NSString *)name;
+- (uint32_t) numberOfTracksInPlaylist: (NSString *) name;
 
 // A track in a specified playlist
 // arguments:
 // index: the index of the track in the playlist
 // name: an NSString representing the playlist's name
 // returns: an MFMusicTrack object
-- (MFMusicTrack *) trackForIndex:(uint32_t)index inPlaylist:(NSString *)name;
+- (MFMusicTrack *) trackForIndex: (uint32_t) index inPlaylist: (NSString *) name;
 
 // Delete a track witb the specified index
 // from a given playlist only
@@ -120,27 +120,27 @@
 // to be removed
 // name: an NSString representing a playlist
 // returns: void
-- (void) removeTrackForIndex:(uint32_t)index fromPlaylist:(NSString *)name;
+- (void) removeTrackForIndex: (uint32_t) index fromPlaylist: (NSString *) name;
 
 // add a file from filesystem, reading ID3 info automatically
 // arguments:
 // path: an NSString representation of the full path to the audio file
 // returns: YES upon success, NO upon failure
-- (BOOL) addFile:(NSString *)path;
+- (BOOL) addFile: (NSString *) path;
 
 // add a file from filesystem, providing song info by hand
 // arguments:
 // path: an NSString representation of the full path to the audio file
 // track: an MFMusicTrack containing the metadata information
 // returns: YES upon success, NO upon failure
-- (BOOL) addFile:(NSString *)path asTrack:(MFMusicTrack *)track;
+- (BOOL) addFile: (NSString *) path asTrack: (MFMusicTrack *) track;
 
 // Add a file from filesystem, to a specified playlist
 // arguments:
 // path: an NSString representation of the full path to the audio file
 // name: an NSString object representing a specific playlist on the device
 // returns: YES upon success, NO opun failure
-- (BOOL) addFile:(NSString *)path toPlaylist:(NSString *)name;
+- (BOOL) addFile: (NSString *) path toPlaylist: (NSString *) name;
 
 // Add a file from filesystem, to a specified playlist, providing metadata by hand
 // arguments:
@@ -148,7 +148,7 @@
 // track: an MFMusicTrack object containin the relevant metadata
 // name: an NSString object representing a specific playlist on the device
 // returns: YES upon success, NO opun failure
-- (BOOL) addFile:(NSString *)path asTrack:(MFMusicTrack *)track toPlaylist:(NSString *)name;
+- (BOOL) addFile: (NSString *) path asTrack: (MFMusicTrack *) track toPlaylist: (NSString *) name;
 
 @end
 
