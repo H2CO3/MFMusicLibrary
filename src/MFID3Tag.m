@@ -355,7 +355,9 @@
 // super
 
 - (void) dealloc {
-	id3_file_close (file);
+	if (file != NULL) {
+		id3_file_close (file);
+	}
 	[super dealloc];
 }
 
